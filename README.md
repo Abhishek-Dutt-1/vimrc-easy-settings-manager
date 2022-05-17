@@ -1,0 +1,1 @@
+GUI Manager for .vimrc
