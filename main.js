@@ -1,6 +1,8 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const os = require('os')
+const fs = require('fs')
 
 function createWindow () {
   // Create the browser window.
@@ -88,4 +90,12 @@ app.on('browser-window-blur', function() {
 app.on('session-created', function() {
   console.log('session-created')
   // app.showAboutPanel()
+})
+
+fs.access(path.join(os.homedir(), "_vimrc"), (err) => {
+  if (err) {
+    console.log(err)
+  } else {
+    console.log("_vimrc exists at " + path.join(os.homedir(), "_vimrc"))
+  }
 })
