@@ -1,0 +1,16 @@
+{
+  "name": "magical-awareness-slip-emwga",
+  "productName": "magical-awareness-slip-emwga",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "dutt",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "18.2.0"
+  }
+}
