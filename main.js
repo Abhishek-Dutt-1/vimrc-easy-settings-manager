@@ -1,10 +1,11 @@
-// Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow } = require('electron')
+const { ipcMain } = require('electron')
+
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -15,7 +16,9 @@ function createWindow () {
     darkTheme: true
   })
 
-  // and load the index.html of the app.
+  ipcMain.handle('ping', () => 'pong')
+  ipcMain.handle('check', check_file)
+
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
@@ -27,12 +30,12 @@ function createWindow () {
   //   mainWindow.setOpacity(0.9)
   // })
 
-  mainWindow.on('blur', ()=>{
+  mainWindow.on('blur', () => {
     console.log('main window blur')
   })
 
   mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-    
+
     item.on('updated', (event, state) => {
       if (state === 'interrupted') {
         console.log('Download is interrupted but can be resumed')
@@ -43,7 +46,7 @@ function createWindow () {
           console.log(`Received bytes: ${item.getReceivedBytes()}`)
         }
       }
-   })
+    })
 
     item.once('done', (event, state) => {
       if (state === 'completed') {
@@ -59,43 +62,36 @@ function createWindow () {
 
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
 
+  // For Mac OS
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// For Mac OS
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-app.on('browser-window-blur', function() {
+app.on('browser-window-blur', function () {
   console.log('browser-window-blur')
-  // app.quit()
-  // app.relaunch()
 })
 
-app.on('session-created', function() {
+app.on('session-created', function () {
   console.log('session-created')
-  // app.showAboutPanel()
 })
 
-fs.access(path.join(os.homedir(), "_vimrc"), (err) => {
-  if (err) {
-    console.log(err)
-  } else {
-    console.log("_vimrc exists at " + path.join(os.homedir(), "_vimrc"))
-  }
-})
+
+function check_file() {
+  fs.access(path.join(os.homedir(), "_vimrc"), (err) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log("_vimrc exists at " + path.join(os.homedir(), "_vimrc"))
+      console.log(process.env.USERPROFILE)
+    }
+  })
+}
